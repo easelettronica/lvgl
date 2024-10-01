@@ -24,16 +24,17 @@ file(GLOB_RECURSE DEMO_SOURCES ${LVGL_ROOT_DIR}/demos/*.c)
 file(GLOB_RECURSE THORVG_SOURCES ${LVGL_ROOT_DIR}/src/libs/thorvg/*.cpp ${LVGL_ROOT_DIR}/src/others/vg_lite_tvg/*.cpp)
 
 # Build LVGL library
-add_library(lvgl ${SOURCES})
+add_library(lvgl INTERFACE)
 add_library(lvgl::lvgl ALIAS lvgl)
+target_sources(lvgl INTERFACE ${SOURCES})
 
 target_compile_definitions(
-  lvgl PUBLIC $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
+  lvgl INTERFACE $<$<BOOL:${LV_LVGL_H_INCLUDE_SIMPLE}>:LV_LVGL_H_INCLUDE_SIMPLE>
               $<$<BOOL:${LV_CONF_INCLUDE_SIMPLE}>:LV_CONF_INCLUDE_SIMPLE>)
 
 # Add definition of LV_CONF_PATH only if needed
 if(LV_CONF_PATH)
-  target_compile_definitions(lvgl PUBLIC LV_CONF_PATH=${LV_CONF_PATH})
+  target_compile_definitions(lvgl INTERFACE LV_CONF_PATH=${LV_CONF_PATH})
 endif()
 
 # Add definition of LV_CONF_SKIP only if needed
@@ -42,7 +43,7 @@ if(LV_CONF_SKIP)
 endif()
 
 # Include root and optional parent path of LV_CONF_PATH
-target_include_directories(lvgl SYSTEM PUBLIC ${LVGL_ROOT_DIR} ${LV_CONF_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(lvgl INTERFACE ${LVGL_ROOT_DIR} ${LV_CONF_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 
 if(NOT LV_CONF_BUILD_DISABLE_THORVG_INTERNAL)
